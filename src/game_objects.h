@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <SDL_ttf.h>
 #include <SDL.h>
 
 //Vector Class
@@ -41,4 +42,19 @@ public:
 	//methods
 	Paddle(Vector);
 	void Show(SDL_Renderer*);
+};
+
+class Score {
+public:
+	//Score Fields
+	Vector position{ 0,0 };
+	SDL_Surface* surf{nullptr};
+	SDL_Texture* texture{nullptr};
+	SDL_Renderer* rend{nullptr};
+	TTF_Font* gfont{nullptr};
+	SDL_Rect score_box{};
+	//methods
+	Score(Vector,SDL_Renderer*, TTF_Font*);
+	void Show();
+	~Score();
 };
