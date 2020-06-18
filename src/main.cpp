@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include "game_objects.h";
 
 constexpr auto GAME_WIDTH = 1280;
@@ -10,6 +11,7 @@ constexpr auto GAME_HEIGHT = 720;
 int main() {
 	//SDL Setup
 	SDL_Init(SDL_INIT_EVERYTHING);
+	TTF_Init();
 	SDL_Window* window{ nullptr };
 
 	window = SDL_CreateWindow(
@@ -22,6 +24,12 @@ int main() {
 	);
 
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
+
+	//Init Font
+	TTF_Font* scoreData = TTF_OpenFont("ostrich-regular.ttf", 40);
+	// Create the player score text fields
+	Score one_score(Vector(GAME_WIDTH / 4, 20), renderer, scoreData);
+	Score two_score(Vector(3 * GAME_WIDTH / 4, 20), renderer, scoreData);
 
 	//generate ball at the origin
 	Vector ball_position{ (GAME_WIDTH / 2.0) - (BALL_WIDTH / 2.0),(GAME_HEIGHT / 2.0) - (BALL_WIDTH / 2.0) };
@@ -63,12 +71,16 @@ int main() {
 		game_ball.Show(renderer);
 		paddle_one.Show(renderer);
 		paddle_two.Show(renderer);
+		one_score.Show();
+		two_score.Show();
 		SDL_RenderPresent(renderer);
 	}
 
 	//Cleanup
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
+	TTF_CloseFont(scoreData);
+	TTF_Quit();
 	SDL_Quit();
 	return 0;
 }
