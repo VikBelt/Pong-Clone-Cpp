@@ -1,26 +1,31 @@
+/*
+Created by Vikram Belthur 6.18.2020
+Classes for the creation of the Game
+*/
+
 #define SDL_MAIN_HANDLED
 
 #include <iostream>
+#include <chrono>
 #include <SDL.h>
 #include <SDL_ttf.h>
-#include "game_objects.h";
+#include "helper.h"
+#include "game_objects.h"
 
-constexpr auto GAME_WIDTH = 1280;
-constexpr auto GAME_HEIGHT = 720;
+using namespace Pong;
 
 int main() {
 	//SDL Setup
 	SDL_Init(SDL_INIT_EVERYTHING);
 	TTF_Init();
-	SDL_Window* window{ nullptr };
-
-	window = SDL_CreateWindow(
+	SDL_Window* window = SDL_CreateWindow
+	(
 		"Vikram's PONG - C++ CLONE",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		GAME_WIDTH,
 		GAME_HEIGHT,
-		SDL_WINDOW_RESIZABLE
+	    SDL_WINDOW_FULLSCREEN
 	);
 
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
@@ -37,14 +42,18 @@ int main() {
 
 	//generate the paddles on either side
 	Vector paddle_one_position{ 50.0, (GAME_HEIGHT / 2.0) - (PADDLE_HEIGHT / 2.0) };
-	Paddle paddle_one{ paddle_one_position };
+	Vector velocity_one{ 0,0 };
+	Paddle paddle_one{ paddle_one_position,velocity_one };
 	Vector paddle_two_position{GAME_WIDTH - 50.0, (GAME_HEIGHT / 2.0) - (PADDLE_HEIGHT / 2.0)};
-	Paddle paddle_two {paddle_two_position};
+	Vector velicity_two{ 0,0 };
+	Paddle paddle_two{ paddle_two_position,velicity_two };
 
-	//game loop
+	//game loop - each frame
 	SDL_Event event;
 	bool running = true;
-	while (running) {
+	double time{0.0};
+	while (running){
+		auto start = std::chrono::high_resolution_clock::now();
 		while (SDL_PollEvent(&event)) {
 			//to quit the pgrm
 			if (event.type == SDL_QUIT) {
@@ -74,13 +83,12 @@ int main() {
 		one_score.Show();
 		two_score.Show();
 		SDL_RenderPresent(renderer);
+
+		auto stop = std::chrono::high_resolution_clock::now();
+		time = std::chrono::duration<double, std::chrono::milliseconds::period>(stop - start).count();
 	}
 
 	//Cleanup
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-	TTF_CloseFont(scoreData);
-	TTF_Quit();
-	SDL_Quit();
+	deleteGame(renderer, window, scoreData);
 	return 0;
 }
