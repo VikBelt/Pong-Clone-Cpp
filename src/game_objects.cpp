@@ -28,9 +28,8 @@ namespace Pong {
 	}
 
 	//Class - Ball
-	Ball::Ball(Vector s_position) {
+	Ball::Ball(Vector s_position, Vector s_velocity) : position{ s_position }, velocity{ s_velocity } {
 		//want to define the Ball rectangle
-		position = s_position;
 		ball.x = (int)position.x;
 		ball.y = (int)position.y;
 		ball.w = BALL_WIDTH;
@@ -42,6 +41,10 @@ namespace Pong {
 		ball.x = (int)position.x;
 		ball.y = (int)position.y;
 		SDL_RenderFillRect(rend, &ball);
+	}
+
+	void Ball::Update(double time) {
+		position += velocity * time;
 	}
 
 	//Class - Paddle
@@ -62,7 +65,7 @@ namespace Pong {
 
 	void Paddle::Update(double time) {
 		//want to implement speed = distance * time
-		position = position * time;
+		position += velocity * time;
 		//want to set bounds on how high the paddle can be
 		if (position.y < 0) { position.y = 0; }
 		else if (position.y > GAME_HEIGHT - PADDLE_HEIGHT) { position.y = GAME_HEIGHT - PADDLE_HEIGHT; }
