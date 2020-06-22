@@ -1,4 +1,4 @@
-# Pong-Clone-C++
+# A C++ Pong Clone
 A Clone of the Classic Pong Game using C++ and SDL2
 ## The Repository Contains the Following Contents
 ### In the Source Folder
