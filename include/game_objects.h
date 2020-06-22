@@ -8,11 +8,17 @@ Classes for the creation of the Game
 #include <SDL_ttf.h>
 #include <SDL.h>
 
-//game dimmensions
-constexpr auto GAME_WIDTH = 1920;
-constexpr auto GAME_HEIGHT = 1080;
-
 namespace Pong {
+
+	//game dimmensions
+	constexpr auto GAME_WIDTH = 1920;
+	constexpr auto GAME_HEIGHT = 1080;
+	constexpr auto BALL_WIDTH = 20;
+	constexpr auto BALL_HEIGHT = 20;
+	constexpr auto BALL_SPEED = 1.0;
+	constexpr auto PADDLE_WIDTH = 15;
+	constexpr auto PADDLE_HEIGHT = 85;
+	constexpr auto PADDLE_SPEED = 1.0;
 
 	//Vector Class
 	class Vector {
@@ -28,23 +34,33 @@ namespace Pong {
 	};
 
 	//Ball Class
-	constexpr auto BALL_WIDTH = 20;
-	constexpr auto BALL_HEIGHT = 20;
-
 	class Ball {
 	public:
 		//Ball fields
 		Vector position{ 0,0 };
+		Vector velocity{ 0,0 };
 		SDL_Rect ball{};
 		//methods
-		Ball(Vector);
+		Ball(Vector,Vector);
+		void Update(double);
 		void Show(SDL_Renderer*);
 	};
 
+	enum class Collider {
+		None = 0,
+		Bottom,
+		Middle,
+		Top,
+	};
+	enum class WallCollider {
+		None = 0,
+		Top,
+		Bottom,
+		Left,
+		Right
+	 };
+	
 	//Paddle Class
-	constexpr auto PADDLE_WIDTH = 5;
-	constexpr auto PADDLE_HEIGHT = 70;
-
 	class Paddle {
 	public:
 		//Paddle fields
