@@ -6,6 +6,8 @@ Created by Vikram Belthur 6.18.2020
 #include <iostream>
 #include "game_objects.h"
 
+using std::to_string;
+
 namespace Pong {
 
 	//Class - Vector
@@ -46,6 +48,7 @@ namespace Pong {
 	void Ball::Update(double time) {
 		position += velocity * time;
 	}
+
 
 	//Class - Paddle
 	Paddle::Paddle(Vector s_position, Vector s_velocity) : position{ s_position }, velocity{ s_velocity } {
@@ -92,6 +95,17 @@ namespace Pong {
 
 	void Score::Show() {
 		SDL_RenderCopy(rend, texture, nullptr, &score_box);
+	}
+
+	void Score::SetScore(int score) {
+		SDL_FreeSurface(surf);
+		SDL_DestroyTexture(texture);
+		surf = TTF_RenderText_Solid(gfont, to_string(score).c_str(), { 0xFF, 0xFF, 0xFF, 0xFF });
+		texture = SDL_CreateTextureFromSurface(rend, surf);
+		int width, height;
+		SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
+		score_box.w = width;
+		score_box.h = height;
 	}
 
 } //namespace Pong
