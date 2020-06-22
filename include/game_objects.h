@@ -1,91 +1,111 @@
 /*
+Class Method Declarations
 Created by Vikram Belthur 6.18.2020
-Classes for the creation of the Game
 */
 
-#pragma once
 #include <iostream>
-#include <SDL_ttf.h>
-#include <SDL.h>
+#include "game_objects.h"
+
+using std::to_string;
 
 namespace Pong {
 
-	//game dimmensions
-	constexpr auto GAME_WIDTH = 1920;
-	constexpr auto GAME_HEIGHT = 1080;
-	constexpr auto BALL_WIDTH = 20;
-	constexpr auto BALL_HEIGHT = 20;
-	constexpr auto BALL_SPEED = 1.0;
-	constexpr auto PADDLE_WIDTH = 15;
-	constexpr auto PADDLE_HEIGHT = 85;
-	constexpr auto PADDLE_SPEED = 1.0;
+	//Class - Vector
+	Vector::Vector(double xpos = 0.0, double ypos = 0.0) : x{ xpos }, y{ ypos } {
+		//Empty Body
+	}
 
-	//Vector Class
-	class Vector {
-	public:
-		//variables for vector
-		double x;
-		double y;
-		Vector(double, double);
-		//operator overloads
-		Vector operator* (double scale);
-		Vector operator+ (Vector source);
-		Vector& operator+= (const Vector& source);
-	};
+	Vector Vector::operator*(double scale) {
+		return Vector(x * scale, y * scale);
+	}
 
-	//Ball Class
-	class Ball {
-	public:
-		//Ball fields
-		Vector position{ 0,0 };
-		Vector velocity{ 0,0 };
-		SDL_Rect ball{};
-		//methods
-		Ball(Vector,Vector);
-		void Update(double);
-		void Show(SDL_Renderer*);
-	};
+	Vector Vector::operator+(Vector source) {
+		return Vector(x + source.x, y + source.y);
+	}
 
-	enum class Collider {
-		None = 0,
-		Bottom,
-		Middle,
-		Top,
-	};
-	enum class WallCollider {
-		None = 0,
-		Top,
-		Bottom,
-		Left,
-		Right
-	 };
-	
-	//Paddle Class
-	class Paddle {
-	public:
-		//Paddle fields
-		Vector position{ 0,0 };
-		Vector velocity{ 0,0 };
-		SDL_Rect paddle{};
-		//methods
-		Paddle(Vector, Vector);
-		void Update(double);
-		void Show(SDL_Renderer*);
-	};
+	Vector& Vector::operator+=(const Vector& source) {
+		x = x + source.x;
+		y = y + source.y;
+		return *this;
+	}
 
-	class Score {
-	public:
-		//Score Fields
-		Vector position{ 0,0 };
-		SDL_Surface* surf{ nullptr };
-		SDL_Texture* texture{ nullptr };
-		SDL_Renderer* rend{ nullptr };
-		TTF_Font* gfont{ nullptr };
-		SDL_Rect score_box{};
-		//methods
-		Score(Vector, SDL_Renderer*, TTF_Font*);
-		void Show();
-		~Score();
-	};
+	//Class - Ball
+	Ball::Ball(Vector s_position, Vector s_velocity) : position{ s_position }, velocity{ s_velocity } {
+		//want to define the Ball rectangle
+		ball.x = (int)position.x;
+		ball.y = (int)position.y;
+		ball.w = BALL_WIDTH;
+		ball.h = BALL_HEIGHT;
+	}
+
+	void Ball::Show(SDL_Renderer* rend) {
+		//want to display the rectangle from the constructor
+		ball.x = (int)position.x;
+		ball.y = (int)position.y;
+		SDL_RenderFillRect(rend, &ball);
+	}
+
+	void Ball::Update(double time) {
+		position += velocity * time;
+	}
+
+
+	//Class - Paddle
+	Paddle::Paddle(Vector s_position, Vector s_velocity) : position{ s_position }, velocity{ s_velocity } {
+		//want to define the Ball rectangle
+		paddle.x = (int)position.x;
+		paddle.y = (int)position.y;
+		paddle.w = PADDLE_WIDTH;
+		paddle.h = PADDLE_HEIGHT;
+	}
+
+	void Paddle::Show(SDL_Renderer* rend) {
+		//want to display the rectangle from the constructor
+		paddle.x = (int)position.x;
+		paddle.y = (int)position.y;
+		SDL_RenderFillRect(rend, &paddle);
+	}
+
+	void Paddle::Update(double time) {
+		//want to implement speed = distance * time
+		position += velocity * time;
+		//want to set bounds on how high the paddle can be
+		if (position.y < 0) { position.y = 0; }
+		else if (position.y > GAME_HEIGHT - PADDLE_HEIGHT) { position.y = GAME_HEIGHT - PADDLE_HEIGHT; }
+	}
+
+	//Class - Score
+	Score::Score(Vector score_position, SDL_Renderer* renderer, TTF_Font* font_data) : rend{ renderer }, gfont{ font_data } {
+		position = score_position;
+		surf = TTF_RenderText_Solid(gfont, "0", { 0xFF, 0xFF, 0xFF, 0xFF });
+		texture = SDL_CreateTextureFromSurface(renderer, surf);
+		int width{};
+		int height{};
+		SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
+		score_box.x = (int)position.x;
+		score_box.y = (int)position.y;
+		score_box.w = width;
+		score_box.h = height;
+	}
+
+	Score::~Score() {
+		SDL_FreeSurface(surf);
+		SDL_DestroyTexture(texture);
+	}
+
+	void Score::Show() {
+		SDL_RenderCopy(rend, texture, nullptr, &score_box);
+	}
+
+	void Score::SetScore(int score) {
+		SDL_FreeSurface(surf);
+		SDL_DestroyTexture(texture);
+		surf = TTF_RenderText_Solid(gfont, to_string(score).c_str(), { 0xFF, 0xFF, 0xFF, 0xFF });
+		texture = SDL_CreateTextureFromSurface(rend, surf);
+		int width, height;
+		SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
+		score_box.w = width;
+		score_box.h = height;
+	}
 
 } //namespace Pong
