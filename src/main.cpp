@@ -91,9 +91,14 @@ int main() {
 			paddle_one.velocity.y = 0.0;
 		}
 
+		//Code to change Paddle Two Position
+
 		//Update motions
 		paddle_one.Update(time);
 		game_ball.Update(time);
+		
+		//check paddle-ball collisions
+		CollisionVelocity(game_ball, paddle_one, paddle_two);
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 128, 0); //window background
 		SDL_RenderClear(renderer);
@@ -116,6 +121,6 @@ int main() {
 	}
 
 	//Cleanup
-	deleteGame(renderer, window, scoreData);
+	DeleteGame(renderer, window, scoreData);
 	return 0;
 }
