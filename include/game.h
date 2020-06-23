@@ -42,6 +42,7 @@ void RunGame()
 	bool keys[4] = {};
 	double time = 0.0;
 
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Welcome to HD-PONG!", "Control using W,S or arrows. Quit with B or ESC. Have FUN!", window);
 	while (running) {
 		auto start = std::chrono::high_resolution_clock::now();
 		SDL_Event event;
