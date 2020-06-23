@@ -1,5 +1,5 @@
 # A C++ Pong Clone
-A clone of the classic retro game - Pong - using C++ and the SDL2 graphics API.
+A clone of the classic retro game - Pong - using C++ and the SDL2 API.
 ## The Repository Contains the Following Contents
 ### In the Source Folder
 game_objects.cpp - implementation for all class methods defined in game_objects.h </br>
